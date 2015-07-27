@@ -1,0 +1,239 @@
+#========================
+#     INTRODUCTION      #
+#========================
+
+#Pourquoi les classes ?
+
+#Ruby est un langage orienté objet, c'est à dire qu'il manipule des concepts appelés objets. (Presque) tout en Ruby est un objet ! Vous les avez toujours utilisés, donc ils devraient vous être familiers. Les objets ont des méthodes, que vous avez déjà vues, et des attributs, qui sont tout simplement des données. Par exemple, dans:
+
+"Matz".length
+# ==> 4
+
+#l'objet "Matz" est une string avec une méthode .length et un attribut longueur de 4. Nous allons apprendre comment créer nos propres objets avec leurs propres méthodes dans les prochains exercices.
+
+#Mais qu'est ce qui fait de "Matz" une string ? Le fait qu'il soit une instance de la classe String. Une classe est juste une façon d'organiser et de générer des objets avec les même attributs et les mêmes méthodes.
+
+# Exemple de classe :
+
+class Langage
+  def initialize(nom, createur)
+    @nom = nom
+    @createur = createur
+  end
+	
+  def description
+    puts "Je suis le #{@nom} et j'ai été créé par #{@createur}!"
+  end
+end
+
+ruby = Langage.new("Ruby", "Yukihiro Matsumoto")
+python = Langage.new("Python", "Guido van Rossum")
+javascript = Langage.new("JavaScript", "Brendan Eich")
+
+ruby.description
+python.description
+javascript.description
+
+
+# Lorsque nous travaillons avec les classes, nous pouvons rencontrer des variables qui sont accessibles partout (les variables globales), d'autres qui ne sont accessibles que dans certaines méthodes (les variables locales), d'autres qui font partie d'une classe (les variables de classe), et des variables qui ne sont accessibles que par des instances d'une classe (les variables d'instance).
+
+# Il en va de même pour les méthodes : certaines sont accessibles partout, d'autres par des membres d'une certaine classe, et d'autres encore ne sont accessibles que par des instances de certains objets.
+
+
+
+
+
+#========================
+#  TYPES DE VARIABLES   #
+#========================
+
+$globale = "variable globale"
+@instance = "variable d'instance"
+@@class = "variable de classe"
+
+# exemple :
+
+class Ordinateur
+  $fabricant = "Mango Computer, Inc."
+  @@fichiers = {salut: "Salut, monde !"}
+  
+  def initialize(identifiant, mot_de_passe)
+    @identifiant = identifiant
+    @mot_de_passe = mot_de_passe
+  end
+  
+  def utilisateur_actuel
+    @identifiant
+  end
+  
+  def self.afficher_fichiers
+    @@fichiers 
+  end
+end
+
+# Création d'une nouvelle instance d'Ordinateur:
+hal = Ordinateur.new("Dave", 12345)
+
+puts "Utisateur actuel : #{hal.utilisateur_actuel}"
+# @utilisateur_actuel appartient à l'instance hal.
+
+puts "Fabricant : #{$fabricant }"
+# $fabricant est une variable globale ! On peut y accéder directement.
+
+puts "Fichiers : #{Ordinateur.afficher_fichiers}"
+# @@fichiers appartient à la classe Ordinateur.
+
+
+# Petit avertissement : les variables globales peuvent être changées n'importe où dans le programme, et c'est généralement une mauvaise idée. Il est bien mieux de créer des variables avec une portée limitée, qui ne peuvent être changées qu'à certains endroits.
+
+# Par exemple, les variables d'instance appartiennent à un objet particulier (ou à une instance). Entraînons-nous sur les variables d'instance ! Nous avons ajouté la classe Personne que nous avons vu précédemment dans l'éditeur.
+
+
+# Utilisation d'une variable de classe comme compteur
+
+class Personne
+  # Définissez votre variable de classe et donnez lui 0 pour valeur sur la ligne 3
+  @@compteur_de_personnes = 0
+  
+  def initialize(nom)
+    @nom = nom
+    # Incrémentez votre variable de classe sur la ligne 8
+    @@compteur_de_personnes += 1
+  end
+  
+  def self.nombre_d_instances
+    # Retournez votre variable de classe sur la ligne 13
+    return @@compteur_de_personnes
+  end
+end
+
+matz = Personne.new("Yukihiro")
+dhh = Personne.new("David")
+
+puts "Nombre d'instances de personnes : #{Personne.nombre_d_instances}"
+
+
+
+
+
+#==========================
+# HERITAGE OVERRIDE SUPER #
+#==========================
+
+# héritage
+
+class ClasseDerivee < ClasseDeBase
+# Quelque chose !
+end
+
+
+# override
+
+class Creature
+  def initialize(nom)
+    @nom = nom
+  end
+  
+  def combat
+    return "Frappe dans les côtelettes !"
+  end
+end
+
+# Ajoutez votre code ci-dessous !
+
+class Dragon < Creature  
+    def combat
+        return "Crache du feu !"
+    end
+end
+
+
+# /!\ Attention quand on override une superclass (ou class de base, ou class parent). Erreur récurrente : "superclass mismatch for class..."
+
+# Accéder à une méthode de la superclass après l'avoir override :
+
+class Creature
+  def initialize(nom)
+    @nom = nom
+  end
+  
+  def combat
+    return "Frappe dans les côtelettes !"
+  end
+end
+
+# Ajoutez votre code ci-dessous !
+
+class Dragon < Creature  
+    def combat
+        puts "Plutôt que de cracher du feu... "
+        return super # à l'intérieur de la classe dérivée, on peut rappeler la méthode de la classe de base avec le mot clé super(arguments)
+    end
+end
+
+
+# UN SEUL PARENT POSSIBLE PAR CLASS EN RUBY !!!
+# Si l'on essaie de faire hériter une class de plusieurs parents => "superclass mismatch for class..."
+
+
+# Exemple : class, superclass, héritage
+
+class Message
+    
+    @@messages_envoyes = 0
+    
+    def initialize(de, a)
+        @de = de
+        @a = a
+        
+         @@messages_envoyes += 1
+    end
+    
+end
+
+mon_message = Message.new("benatou", "helenou")
+
+class Email < Message
+    
+    def initialize(de, a)
+       super
+        
+    end
+    
+end
+
+
+
+
+#========================
+#TP: ORDINATEUR VIRTUEL #
+#========================
+
+class Ordinateur
+    @@utilisateurs = {}
+    
+    def initialize(identifiant, mot_de_passe)
+        @identifiant = identifiant
+        @mot_de_passe = mot_de_passe
+        @fichiers = {}
+        @@utilisateurs[identifiant] = mot_de_passe 
+    end
+    
+    def creer(nom_de_fichier)
+        heure = Time.now
+        @fichiers[nom_de_fichier] = heure
+        
+        puts "Le fichier #{nom_de_fichier} a été créé par #{@identifiant} à #{heure}"     
+    end
+    
+    def Ordinateur.get_utilisateurs
+        return @@utilisateurs
+    end
+end
+
+mon_ordinateur = Ordinateur.new("Bernard", 12346)
+
+mon_ordinateur.creer("fichier de test")
+
+puts Ordinateur.get_utilisateurs
+
