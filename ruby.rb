@@ -437,3 +437,312 @@ when 'supprimer'
 else
   puts "Erreur !"
 end
+
+
+
+
+#/==========================
+# expressions simplifiées  #
+#===========================
+
+#if/unless
+
+instruction if condition
+instruction unless condition
+
+
+#expression ternaire
+
+booleen ? "instruction si true": "instruction si false"
+
+
+#case
+
+puts "Salut, toi !"
+salut = gets.chomp
+
+# Ajoutez votre expression case ci-dessous !
+
+case salut
+when "Anglais" then puts "Hello"
+when "Francais" then puts "Bonjour"
+when "Allemand" then puts "Guten Tag"
+when "Finnois" then puts "Haloo"
+else puts "Je ne connais pas cette langue"
+end
+
+
+#affectation conditionnelle : affecte une valeur à une variable si elle est vide
+
+livre_favori = nil
+puts livre_favori
+
+livre_favori ||= "Demain les chiens"
+puts livre_favori
+
+livre_favori ||= "Ruby - Les fondamentaux"
+puts livre_favori
+
+livre_favori = "Ruby - Les fondamentaux"
+puts livre_favori
+
+
+#En Ruby, les méthodes retournent implicitement la dernière expression évaluée
+
+def multiple_de_trois(n)
+  n % 3 == 0 ? "True" : "False"
+end
+
+
+#évaluation court-circuit : Cela signifie que Ruby n'observe les deux expressions que si c'est nécessaire. S'il voit
+#false && true
+#Il s'arrête de lire dès qu'il arrive sur &&, puisqu'il sait que false && n'importe quoi sera faux, quoi qu'il arrive.
+
+def a
+  puts "A a été évaluée !"
+  return true
+end
+
+def b
+  puts "B a aussi été évaluée !"
+  return true
+end
+
+puts a || b
+puts "------"
+puts a && b
+
+
+#
+mon_tableau = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+mon_tableau.each do |x|
+    puts x if x%2 ==0
+end
+
+
+
+
+#/===========================
+# méthodes natives de Ruby  #
+#============================
+
+#Up and Down : Si nous connaissons l'intervalle des nombres que nous voulons créer, il est possible d'utiliser les méthodes .upto et .downto. C'est une solution plus "Rubique" que d'utiliser une boucle for qui s'arrête quand une variable de comptage atteint une certaine valeur. Nous pourrions utiliser .upto pour afficher les nombres d'un intervalle défini :
+
+95.upto(100) { |nombre| print nombre, " " }
+# Affiche 95 96 97 98 99 100
+
+"L".upto("P") { |lettre| puts lettre}
+
+# .respond_to?(:sym) => prend un symbole et renvoie true si un objet peut recevoir cette méthode
+
+# .to_s ; .to_i ; .to_sym ; .to_a => transforme en string/integer/symbol/array
+
+# .next => renvoie le nombre qui suit celui qu'on appelle
+
+# opérateur de concaténation : remplace .push
+
+alphabet = ["a", "b", "c"]
+alphabet << "d" # Mettez-moi à jour !
+
+string = "Une girafe encerclée par "
+string << "des magichiens !" # Moi aussi !
+
+#interpolation de strings 
+
+choses_favorites = ["le Ruby", "les expressos", "les bonbons"]
+
+puts "Certaines de mes choses favorites :"
+
+choses_favorites.each do |chose|
+  puts "J'adore #{chose} !"
+end
+
+
+
+
+#/===========================
+#        Refactoring        #
+#============================
+
+#Le réusinage est juste un mot un petit peu compliqué pour dire que nous voulons améliorer la structure ou l'apparence de notre code sans changer ce qu'il fait. 
+
+# if/unless :
+puts "Un est plus petit que deux !" if 1 < 2
+
+# opérateur ternaire : condition ? instruction si true : instruction si false
+puts 1<2? "Un est plus petit que deux !": "Un n'est pas plus petit que deux."
+
+# case...when...then
+
+puts "Quel est votre langage préférée ?"
+langage = gets.chomp
+
+case langage 
+when "Ruby" then puts "Ruby est génial pour les applications web !"
+when "Python" then puts "Python est génial pour la science."
+when "JavaScript" then puts "JavaScript rend les sites tellement plus cool."
+when "HTML" then puts "HTML, c'est la base de tous les sites !"
+when "CSS" then puts "CSS rend les sites sexys."
+else
+  puts "Je ne connais pas ce langage!"
+end
+
+# for :
+3.times { puts "Je suis un génie du réusinage !"}
+
+
+# Exemple de code réusiné
+# Avant :
+
+$VERBOSE = nil    # Ceci vous sera expliqué à la fin de la leçon
+require 'prime'   # Ceci est un module. On vous en dit plus très vite !
+
+def n_premiers(n)
+
+  unless n.is_a? Integer
+     "n doit être un nombre entier."
+  end
+
+  if n <= 0
+     "n doit être supérieur à 0."
+  end
+  
+  tableau_premiers = [] if tableau_premiers.nil?
+  
+  premier = Prime.new
+  for nombre in (1..n)
+    tableau_premiers.push(premier.next)
+  end
+   tableau_premiers
+end
+
+n_premiers(10)
+
+# Après :
+
+$VERBOSE = nil    # We'll explain this at the end of the lesson.
+require 'prime'   # This is a module. We'll cover these soon!
+
+def n_premier(n)
+
+  puts "n doit être un entier."  unless n.is_a? Integer
+
+  "n doit être plus grand que 0."  if n <= 0
+
+  tableau_premier ||= []
+
+  prime = Prime.new
+  n.times { tableau_premier << prime.next }
+
+end
+
+n_premier(10)
+
+# Un peu plus loin, Ruby 1.9 permet de simplifier un peu plus :
+
+require 'prime'
+
+def n_premiers(n)
+  # On vérifie que l'entrée est correcte !
+  "n doit être un nombre entier." unless n.is_a? Integer
+  "n doit être supérieur à 0." if n <= 0
+
+  # La classe Prime de Ruby 1.9 crée automatiquement le tableau !
+  premier = Prime.instance
+  premier.first n
+end
+
+n_premiers(10)
+
+
+
+
+
+#/===========================
+#    Bloc, Proc & Lambda    #
+#============================
+
+#Bloc, appelé dans une méthode via yield
+# Définition de la méthode - Appel de la méthode avec un paramètre et le bloc que l'on veut appeler avec yield
+
+def double(nombre)
+    
+    yield(nombre)
+    
+end
+
+double(2) { |x| 2 * x }
+
+
+#Proc => bloc sauvegardable
+
+floats = [1.2, 3.45, 0.91, 7.727, 11.42, 482.911]
+# Ecrivez votre code sous cette ligne !
+arrondi = Proc.new do |x| 
+    x.floor
+end
+
+# Ecrivez votre au-dessus de cette ligne !
+ints = floats.collect(&arrondi)
+
+# Proc & yield :
+
+def bonjour
+    yield
+end
+
+phrase = Proc.new { puts "Bonjour !" }
+
+bonjour(&phrase)
+
+#Appel direct des procs avec .call
+
+salut = Proc.new { puts "Salut !" }
+
+salut.call
+
+# conversion des symboles en procs :
+
+tableau_nombres = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+tableau_strings = tableau_nombres.collect(&:to_s)
+
+
+#Lambda
+
+def lambda_demo(un_lambda)
+  puts "Je suis une méthode !"
+  un_lambda.call
+end
+
+lambda_demo(lambda { puts "Je suis le lambda !" })
+
+# Syntaxe du lambda :
+
+strings = ["leonardo", "donatello", "raphael", "michaelangelo"]
+# Ecrivez votre code sous cette ligne!
+
+symbolize = lambda { |x| x.to_sym }
+
+# Ecrivez votre code au-dessus de cette ligne !
+symboles = strings.collect(&symbolize)
+
+# Exemple
+
+mon_tableau = ["raindrops", :kettles, "whiskers", :mittens, :packages]
+
+# Ajoutez votre code ci-dessous
+
+filtre_symbole = lambda { |x| x.is_a? Symbol }
+symboles = mon_tableau.select(&filtre_symbole)
+
+
+#Un bloc est juste un morceau de code entre do .. end ou des {}. Ce n'est pas un objet en lui-même, mais on peut le passer à des méthodes telles que .each ou .select.
+
+#Une proc est un bloc sauvegardé que l'on peut utiliser encore et encore...
+
+#Un lambda est une proc, seulement il fait attention au nombre d'arguments qu'on lui passe. De plus il rend le contrôle à la méthode lorsqu'il a terminé de s’exécuter.
+
+#Les blocs, les procs et les lambdas peuvent avoir la même utilité dans de nombreux cas, mais le contexte exact de votre programme vous aidera à choisir le plus adapté à votre situation.
+
