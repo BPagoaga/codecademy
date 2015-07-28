@@ -1,1 +1,208 @@
+#=======================
+#  PUBLIC / PRIVATE    #
+#=======================
 
+class Personne
+  def initialize(nom, age)
+    @nom = nom
+    @age = age
+  end
+  
+  public    # Cette méthode peut être appelée en dehors de la classe.
+  
+  def a_propos_de_moi
+    puts "Je suis #{@nom} et j'ai #{@age} ans !"
+  end
+  
+  private   # Cette méthode ne peut pas !
+  
+  def numero_de_compte
+    @numero_de_compte= 12345
+    puts "Mon numéro de compte en banque est #{@numero_de_compte}."
+  end
+end
+
+eric = Personne.new("Eric", 26)
+eric.a_propos_de_moi
+eric.numero_de_compte
+
+# Les méthodes sont publiques par défaut en Ruby
+
+# Les méthodes private sont simplement réservées à l'objet dans lequel elles sont définies. On dit aussi qu'une méthode privée ne peut pas être appelée avec un receveur explicite. Vous avez déjà utilisé des receveurs, ce sont les objets sur lesquels des méthodes sont appelées. A chaque fois que vous écrivez objet.methode, objet est le receveur de la méthode.
+
+# Afin d'accéder à une information privée, nous devons créer une méthode qui sait comment accéder à celle-ci. C'est ce qui sépare l'implémentation privée de l'interface publique
+
+
+# attr_reader & attr_writer
+
+class Personne
+    
+    attr_reader :nom
+    attr_writer :travail
+    
+  def initialize(nom, travail)
+    @name = nom
+    @job = travail
+  end
+ 
+end
+
+# Le nom= peut vous paraître étrange mais il est tout à fait autorisé de mettre un égal = dans le nom d'une méthode. En fait, c'est une convention utilisée pour spécifier qu'une méthode permet de définir une variable.
+
+
+# attr_accessor = reader + writer
+
+class Personne
+  attr_reader :nom
+  attr_accessor :travail
+  
+  def initialize(nom, travail)
+    @name = name
+    @job = travail
+  end
+end
+
+
+
+
+
+#=======================
+#       MODULES        #
+#=======================
+
+# Un module est une boîte à outils qui contient des méthodes et des constantes. En Ruby, il existe beaucoup d'outils dont vous pourriez avoir besoin, mais ce serait encombrant de tous les avoir à chaque fois. Pour cette raison, ils sont rangés en modules et vous pouvez sélectionner les modules que vous voulez utiliser en fonction de vos besoins.
+
+# Les modules sont un peu comme des classes, seulement, les modules ne peuvent pas créer d'instances et ne peuvent pas avoir de classes filles. Ils ne servent qu'à ranger des choses !
+
+module Cercle
+
+  PI = 3.141592653589793
+  
+  def Cercle.aire(rayon)
+    PI * radius**2
+  end
+  
+  def Cercle.circonference(rayon)
+    2 * PI * radius
+  end
+end
+
+
+# L'un des intérêts majeurs des modules est de séparer des méthodes et des constantes dans des "namespaces" (espaces de nommage). On appelle cela le namespacing), c'est grâce à cela que le Ruby ne confond pas Math::PI and Cercle::PI.
+
+# Vous voyez les deux deux-points que nous avons utilisé ? On appelle cela le opérateur de résolution de portée, c'est une jolie manière de dire à Ruby où se trouvent des morceaux de code spécifiques. Si l'on écrit : Math::PI, Ruby saura qu'il doit chercher PI dans le module Math (ça fonctionne de la même façon pour notre module Cercle).
+
+puts Math::PI # 3.141592653589793
+
+
+# Certains modules, comme Math sont présents par défaut dans l’interpréteur. Cependant certains autres doivent être explicitement importés et il faut utiliser le mot-clé require pour cela
+
+
+#require
+
+require 'date'
+puts Date.today # 2015-07-28
+
+
+# Toute classe qui include (inclut) un certain module peut utiliser les méthodes de ce module !
+
+
+#include
+
+class Angle
+  include Math # ici on inclut le module math
+  attr_accessor :radians
+  
+  def initialize(radians)
+    @radians = radians
+  end
+  
+  def cosinus
+    cos(@radians) # ici on peut appeler directement la méthode cos, sans passer par Math::cos
+  end
+end
+
+angle = Angle.new(1)
+angle.cosinus
+
+
+
+
+
+#=======================
+#        MIXINS        #
+#=======================
+
+# Quand un module est utilisé pour mélanger des comportements et des informations dans un module on appelle cela un mixin. Les mixins nous permettent de customiser une classe sans avoir à la réécrire !
+
+module Action
+  def sauter
+    @distance = rand(4) + 2
+    puts "J'ai sauté #{@distance} m !"
+  end
+end
+
+class Lapin
+  include Action
+  attr_reader :nom
+  def initialize(nom)
+    @nom= nom
+  end
+end
+
+class Criquet
+  include Action
+  attr_reader :nom
+  def initialize(nom)
+    @nom= nom
+  end
+end
+
+peter = Lapin.new("Jojo")
+jiminy = Criquet.new("Jiminy")
+
+peter.sauter
+jiminy.sauter
+
+
+# Le mot-clé include "mixe" les méthodes d'un module au niveau de l'instance (c'est à dire que les instances d'une certaine classe ont le droit d'utiliser les méthodes du module).
+
+# Le mot-clé extend permet de "mixer" les méthodes d'un module au niveau de la *classe. C'est à dire que la classe en elle-même peut utiliser les méthodes et pas seulement les instances de cette classe.
+
+include Module #les instances de la classe peuvent utiliser les méthodes du module:
+peter.sauter
+jiminy.sauter
+
+
+extend Module #les class peuvent utiliser les méthodes des modules
+
+
+# LePresent a une méthode maintenant que nous allons étendre à IciEt
+
+module LePresent
+  def maintenant
+    puts "Il est #{Time.new.hour > 12 ? Time.new.hour - 12 : Time.new.hour}:#{Time.new.min} #{Time.new.hour > 12 ? 'PM' : 'AM'} (GMT)."
+  end
+end
+
+class IciEt
+  extend LePresent
+end
+
+IciEt.maintenant
+
+
+module Langages
+  FAVORI = "Ruby"  # Vous aviez écrit cela non ? :)
+end
+
+class Maitre
+  include Langages
+  def initialize; end
+  def victoire
+    puts FAVORI
+  end
+end
+
+totale = Maitre.new
+totale.victoire
