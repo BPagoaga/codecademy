@@ -3,7 +3,7 @@
 #=======================
 
 my_variables = variable
-def MyMethodes ;end
+def my_methodes ;end
 class MyClass ;end
 module MyModules ;end
 MY_CONSTANTES = constante
